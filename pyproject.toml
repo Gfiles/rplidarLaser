@@ -1,0 +1,10 @@
+[project]
+name = "rplidarlaser"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "adafruit-circuitpython-rplidar>=1.2.16",
+    "opencv-python>=4.11.0.86",
+]
