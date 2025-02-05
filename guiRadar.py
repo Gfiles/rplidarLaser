@@ -1,6 +1,7 @@
 import cv2 #pip install opencv-python
 import numpy as np
 from time import sleep
+import time
 import math
 import threading
 import random
@@ -159,8 +160,8 @@ def animate_radar(stopEvent):
 	global debug
 	radarPoints = list()
 	maxDist = int(radarMaxDist_text.get())
-	for i in range(360):
-		radarPoints.append(maxDist)
+	for i in range(360*2):
+		radarPoints.append([maxDist, time.time()])
 	while not stopEvent.is_set():
 		for scan in laser.iter_scans():
 			minDist = int(radarMinDist_text.get())
@@ -260,34 +261,28 @@ def animate_radar(stopEvent):
 				image = cv2.line(backGround, (0, dataHeight), (0, 0), yellow, 3)
 
 			touchPoints = list()
+			
 			if laserOn:
 				#Create array for radar points
 				print("-----")
+				radarPoints = list()
+				radarPoints.append(Point(0, 0))
 				for (_, ang, dist) in scan:
-					#print(f"{ang} - {dist}")
-					#sleep(1)
-					if dist > maxDist:
-						dist = maxDist
+					#if dist > maxDist:
+						#dist = maxDist
 					if ang > 180:
 						ang = ang - 360
 					if minDist < dist <= maxDist and minAng < ang < maxAng:
-						radarPoints[int(ang)] = dist
-				#Draw radar
-				for i in range(360):
-					if i == 0:
-						lastDrawPoint = Point(0, radarPoints[0])
-					else:
-						lastDrawPoint = Point(i-1, radarPoints[i-1])
-					drawPoint = Point(i, radarPoints[i])
-					image = cv2.line(backGround, lastDrawPoint.xyRadar(), drawPoint.xyRadar(), red, 2)
-					#Get Points in TouchArea
-					if (0 < drawPoint.x() < touchWidth) and (0 < drawPoint.y() < touchHeight):
-						#print(f"{int(x)},{int(y)}")
-						touchPoints.append(Point(ang, dist))
-						if debug:
-							image = cv2.line(backGround, lastDrawPoint.xyData(), drawPoint.xyData(), yellow, 2)
-
-				#Create Arrays ro make zones to detectar objects in area. A zone is made up area close points in scucession
+						radarPoints.append(Point(ang, dist))
+						#Draw radar
+						image = cv2.line(backGround, radarPoints[-2].xyRadar(), radarPoints[-1].xyRadar(), red, 2)
+						#Get Points in TouchArea
+						if (0 < radarPoints[-1].x() < touchWidth) and (0 < radarPoints[-1].y() < touchHeight):
+							#print(f"{int(x)},{int(y)}")
+							touchPoints.append(Point(ang, dist))
+							if debug:
+								image = cv2.line(backGround, radarPoints[-2].xyData(), radarPoints[-1].xyData(), yellow, 2)
+				#Create Arrays to make zones to detectar objects in area. A zone is made up area close points in scucession
 				points = list()
 				lastPoint = Point(0, 0)
 				zones = list()
@@ -336,7 +331,7 @@ def animate_radar(stopEvent):
 							"""
 							cv2.circle(backGround, radarPoint, 5, (255, 255, 0), -1)
 
-				image = cv2.line(backGround, drawPoint.xyRadar(), Point(0,0).xyRadar(), red, thickness)
+				image = cv2.line(backGround, radarPoints[-1].xyRadar(), radarPoints[0].xyRadar(), red, thickness)
 			# Displaying the image
 
 			cv2.imshow(window_name, image)
