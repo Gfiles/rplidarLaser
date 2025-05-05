@@ -178,7 +178,7 @@ def saveJson():
     else:
         config["inputType"] = "Touch"
 
-     # Ensure input_type_var is updated before saving
+     # Ensure output_type_var is updated before saving
     if 'output_type_var' in globals():
         config["outputType"] = output_type_var.get()
     else:
@@ -383,7 +383,7 @@ def animate_radar(stopEvent):
                 if config["inputType"] == "Touch":
                     points = list()
                     lastPoint = Point(0, 0)
-                    zones = list()
+                    detected_zones = list()
                     newZone = False
                     for point in touchPoints:
                         distance = distBetweenPoints(point.x(), point.y(), lastPoint.x(), lastPoint.y())
@@ -395,11 +395,11 @@ def animate_radar(stopEvent):
                             newZone = True
                         else:
                             if newZone:
-                                zones.append(points)
+                                detected_zones.append(points)
                                 newZone = False
                                 points = list()
                     # iterate over all Zones to get the mediam point which will be converted to Touch Points            
-                    for zone in zones:
+                    for zone in detected_zones:
                         if len(zone) > 2:
                             xx1 = zone[0].x()
                             xx2 = zone[-1].x()

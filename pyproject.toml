@@ -5,8 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-
     "adafruit-circuitpython-rplidar>=1.2.16",
-
     "opencv-python>=4.11.0.86",
+    "pyautogui>=0.9.54",
+    "pynput>=1.8.1",
+    "python-osc>=1.9.3",
 ]
