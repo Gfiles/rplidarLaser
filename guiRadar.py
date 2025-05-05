@@ -579,7 +579,6 @@ widthOffset = config["widthOffset"]
 heightOffset = config["heightOffset"]
 angleOffset = config["angleOffset"]
 time2Scan = config["time2Scan"]
-sendSpeed = config["sendSpeed"]
 minSize = config["minSize"]
 maxSize = config["maxSize"]
 oscPort = config["oscPort"]
@@ -822,6 +821,22 @@ oscAddress_text = tk.StringVar(value=oscAddress)
 oscAddressEntry = ttk.Entry(tab2, textvariable=oscAddress_text, font=("Arial", 12))
 oscAddressEntry.pack()
 
+ttk.Label(tab2, text='Time to Scan (seconds)', font=("Arial", 12)).pack(pady=(10, 0))
+time2Scan_text = tk.StringVar(value=str(time2Scan))
+time2ScanEntry = ttk.Entry(tab2, textvariable=time2Scan_text, font=("Arial", 12))
+time2ScanEntry.pack()
+
+# Update time2Scan in config when changed
+def on_time2Scan_change(event):
+    try:
+        val = float(time2Scan_text.get())
+        config["time2Scan"] = val
+        saveJson()
+    except ValueError:
+        pass
+
+time2ScanEntry.bind("<FocusOut>", on_time2Scan_change)
+
 # End Tab2
 
 # Start Tab3
@@ -891,6 +906,9 @@ tk.Button(tkWindow, text="Save Settings", command = saveJson, font=("Arial", 14)
 
 # Make zones lists global
 detected_zones = []  # For automatically detected zones
+
+# Schedule initial update of zones listbox after GUI is ready
+schedule_initial_update()
 
 stopEvent = threading.Event()
 thread = threading.Thread(target=animate_radar, daemon=True, args=(stopEvent,))
